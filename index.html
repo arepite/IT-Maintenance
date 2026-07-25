@@ -203,7 +203,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
         <option>IT</option>
         <option>Air Conditioner</option>
         <option>Electrical</option>
-        <option>Civil</option>
+        <option>Civil</option><option>Plumbing</option>
       </select>
       <select class="filter-select" id="lang-switcher" onchange="setLanguage(this.value)" style="font-weight:600" title="Language / Bahasa">
         <option value="en">🌐 English</option>
@@ -263,11 +263,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
             <input class="search-input" placeholder="🔍 Search..." id="inv-search" oninput="renderInventory()">
             <select class="filter-select" id="inv-filter-dept" onchange="renderInventory()">
               <option value="">All Departments</option>
-              <option>IT</option><option>Air Conditioner</option><option>Electrical</option><option>Civil</option>
+              <option>IT</option><option>Air Conditioner</option><option>Electrical</option><option>Civil</option><option>Plumbing</option>
             </select>
             <select class="filter-select" id="inv-filter-status" onchange="renderInventory()">
               <option value="">All Status</option>
-              <option>OK</option><option>Need Repair</option><option>Need to check</option><option>Severe blur</option>
+              <option>OK</option><option>Need to Repair</option>
             </select>
             <select class="filter-select" id="inv-filter-warranty" onchange="renderInventory()">
               <option value="">All Warranty</option>
@@ -297,7 +297,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
             <input class="search-input" placeholder="🔍 Search WO, device..." id="maint-search" oninput="renderMaintenance()">
             <select class="filter-select" id="maint-filter-dept" onchange="renderMaintenance()">
               <option value="">All Departments</option>
-              <option>IT</option><option>Air Conditioner</option><option>Electrical</option><option>Civil</option>
+              <option>IT</option><option>Air Conditioner</option><option>Electrical</option><option>Civil</option><option>Plumbing</option>
             </select>
             <select class="filter-select" id="maint-filter-status" onchange="renderMaintenance()">
               <option value="">All Status</option>
@@ -327,7 +327,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
             <input class="search-input" placeholder="🔍 Search code, location..." id="trans-search" oninput="renderTransfer()">
             <select class="filter-select" id="trans-filter-dept" onchange="renderTransfer()">
               <option value="">All Departments</option>
-              <option>IT</option><option>Air Conditioner</option><option>Electrical</option><option>Civil</option>
+              <option>IT</option><option>Air Conditioner</option><option>Electrical</option><option>Civil</option><option>Plumbing</option>
             </select>
           </div>
         </div>
@@ -433,7 +433,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
         <div class="form-group">
           <label class="form-label">Department *</label>
           <select class="form-select" id="inv-dept" onchange="onInvDeptChange()">
-            <option>IT</option><option>Air Conditioner</option><option>Electrical</option><option>Civil</option>
+            <option>IT</option><option>Air Conditioner</option><option>Electrical</option><option>Civil</option><option>Plumbing</option>
           </select>
         </div>
         <div class="form-group">
@@ -492,8 +492,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
         <div class="form-group">
           <label class="form-label">Status *</label>
           <select class="form-select" id="inv-status">
-            <option>OK</option><option>Need Repair</option><option>Need to check</option>
-            <option>Severe blur</option><option>Decommissioned</option>
+            <option>OK</option><option>Need to Repair</option>
           </select>
         </div>
         <div class="form-group">
@@ -519,7 +518,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
         <div class="form-group">
           <label class="form-label">Department *</label>
           <select class="form-select" id="maint-dept">
-            <option>IT</option><option>Air Conditioner</option><option>Electrical</option><option>Civil</option>
+            <option>IT</option><option>Air Conditioner</option><option>Electrical</option><option>Civil</option><option>Plumbing</option>
           </select>
         </div>
         <div class="form-group">
@@ -626,7 +625,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
         <div class="form-group">
           <label class="form-label">Department *</label>
           <select class="form-select" id="trans-dept">
-            <option>IT</option><option>Air Conditioner</option><option>Electrical</option><option>Civil</option>
+            <option>IT</option><option>Air Conditioner</option><option>Electrical</option><option>Civil</option><option>Plumbing</option>
           </select>
         </div>
         <div class="form-group">
@@ -771,7 +770,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
             <option>IT</option>
             <option>Air Conditioner</option>
             <option>Electrical</option>
-            <option>Civil</option>
+            <option>Civil</option><option>Plumbing</option>
           </select>
         </div>
         <div class="form-group">
@@ -1479,9 +1478,24 @@ let software = [
 
 
 // Tag all seed data with IT dept and empty warranty/photos
-inventory.forEach(i => { if(!i.dept) i.dept='IT'; if(!i.warranty) i.warranty=''; });
-maintenance.forEach(m => { if(!m.dept) m.dept='IT'; if(!m.photoBefore) m.photoBefore=''; if(!m.photoAfter) m.photoAfter=''; });
+inventory.forEach(i => {
+  if(!i.dept) i.dept='IT';
+  if(!i.warranty) i.warranty='';
+  // Normalize old status values to new clean set
+  if(i.status==='Need Repair'||i.status==='Need to check'||i.status==='Severe blur'||i.status==='Decommissioned') i.status='Need to Repair';
+});
+maintenance.forEach(m => { if(!m.dept) m.dept='IT'; if(!m.photoBefore) m.photoBefore=''; if(!m.photoAfter) m.photoAfter=''; if(!m.location) m.location=''; });
 transfers.forEach(t => { if(!t.dept) t.dept='IT'; });
+
+// Recalculate all inventory statuses from maintenance log on load
+function recalcInventoryStatuses() {
+  inventory.forEach(item => {
+    const openTicket = maintenance.some(m=>m.device===item.code&&(m.status==='Pending'||m.status==='In Progress'));
+    if (openTicket) item.status='Need to Repair';
+    else if (item.status==='Need to Repair') item.status='OK'; // no open ticket, revert to OK
+    // If already OK, leave it alone
+  });
+}
 
 // ==============================================================
 // STATE
@@ -1497,6 +1511,7 @@ const DEPT_FIELDS = {
   'Air Conditioner':  ['Brand/Model','BTU/Capacity','Type (Split/Window/Cassette)','Refrigerant Type'],
   'Electrical':       ['Type (Wiring/Panel/Socket/Lighting)','Location/Circuit','Capacity (Amp/Voltage)',''],
   'Civil':            ['Type (Door/Window/Roof/Plumbing)','Material','Building/Block Area',''],
+  'Plumbing':         ['Type (Pipe/Valve/Fixture/Drain)','Material/Size','Building/Block Area',''],
 };
 
 // ==============================================================
@@ -1626,7 +1641,7 @@ function dashboardFilter(page, field, value) {
 // STATUS BADGE
 // ==============================================================
 function statusBadge(s) {
-  const m={'OK':'badge-ok','Need Repair':'badge-repair','Need to check':'badge-check',
+  const m={'OK':'badge-ok','Need to Repair':'badge-repair','Need Repair':'badge-repair','Need to check':'badge-check',
     'Completed':'badge-completed','Pending':'badge-pending','In Progress':'badge-inprogress',
     'Severe blur':'badge-blur','Decommissioned':'badge-check'};
   return `<span class="badge ${m[s]||'badge-check'}">${s}</span>`;
@@ -1948,9 +1963,11 @@ function saveMaintenance() {
 
 function syncInventoryStatus(deviceCode, woStatus) {
   const item=inventory.find(i=>i.code===deviceCode); if(!item) return;
-  if (woStatus==='Pending'||woStatus==='In Progress') item.status='Need Repair';
-  else if (woStatus==='Completed') {
-    const stillOpen=maintenance.some(m=>m.device===deviceCode&&m.status!=='Completed');
+  if (woStatus==='Pending'||woStatus==='In Progress') {
+    item.status='Need to Repair';
+  } else if (woStatus==='Completed') {
+    // Only revert to OK if no other open tickets exist for this device
+    const stillOpen=maintenance.some(m=>m.device===deviceCode&&(m.status==='Pending'||m.status==='In Progress'));
     if (!stillOpen) item.status='OK';
   }
 }
@@ -2392,6 +2409,8 @@ async function syncFromSheets() {
   }
 
   // Always show synced if main data loaded, even if Software had issues
+  // Recalculate all inventory statuses based on latest maintenance data
+  recalcInventoryStatuses();
   setSyncStatus(t('sync.synced'),'var(--green)');
   showToast(t('toast.synced'),'success');
 
