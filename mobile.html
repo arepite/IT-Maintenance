@@ -244,7 +244,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
         <option>IT</option>
         <option>Air Conditioner</option>
         <option>Electrical</option>
-        <option>Civil</option>
+        <option>Civil</option><option>Plumbing</option>
       </select>
     </div>
     <div class="form-group">
@@ -426,7 +426,8 @@ function mLoginSuccess(username, role) {
   document.getElementById('login-wrap').style.display = 'none';
   document.getElementById('main-app').style.display = 'block';
   // Show/hide admin-only elements
-  document.querySelectorAll('.admin-tab').forEach(el => el.style.display = role==='admin' ? '' : 'none');
+  // Inventory tab visible to all roles (read-only for staff)
+document.querySelectorAll('.admin-tab').forEach(el => el.style.display = '');
   document.getElementById('staff-quick-shortcut').style.display = role==='staff' ? 'block' : 'none';
   document.getElementById('m-header-sub').textContent = role==='admin' ? 'Admin View' : 'Staff View';
   // Load settings into form
@@ -481,7 +482,7 @@ async function mSync() {
     mInventory = invData.map(r=>({
       id:+r.ID||0, dept:r.Department||'IT', owner:r.Owner||'',
       code:r.Code||'', location:r.Location||'', item:r.Item||'',
-      warranty:r.Warranty||'', desc1:r.Desc1||'', status:r.Status||'OK', remark:r.Remark||''
+      warranty:r.Warranty||'', desc1:r.Desc1||'', status:(r.Status==='Need Repair'||r.Status==='Need to check'||r.Status==='Severe blur')?'Need to Repair':(r.Status||'OK'), remark:r.Remark||''
     })).filter(i=>i.id>0);
   }
   if (maintData.length) {
@@ -489,7 +490,7 @@ async function mSync() {
       id:+r.ID||0, dept:r.Department||'IT', wo:r.WO||'',
       dateCheck:r.DateCheck||'', device:r.Device||'', desc:r.Desc||'',
       issue:r.Issue||'', findings:r.Findings||'', recommendation:r.Recommendation||'',
-      status:r.Status||'Pending', location:r.Location||'', dateComplete:r.DateComplete||'',
+      status:(r.Status==='Need Repair'||r.Status==='Need to check'||r.Status==='Severe blur')?'Need to Repair':(r.Status||'Pending'), location:r.Location||'', dateComplete:r.DateComplete||'',
       photoBefore:r.PhotoBefore||'', photoAfter:r.PhotoAfter||''
     })).filter(m=>m.id>0);
     mNextMaintId = Math.max(...mMaintenance.map(m=>m.id), 0) + 1;
@@ -815,9 +816,17 @@ async function mChangePassword() {
 // HELPERS
 // ============================================================
 function mStatusBadge(s) {
-  const m={'OK':'badge-ok','Need Repair':'badge-repair','Need to check':'badge-check',
-    'Completed':'badge-completed','Pending':'badge-pending','In Progress':'badge-inprogress',
-    'Severe blur':'badge-repair','Decommissioned':'badge-check'};
+  const m={
+    'OK':'badge-ok',
+    'Need to Repair':'badge-repair',
+    'Need Repair':'badge-repair', // legacy
+    'Need to check':'badge-check', // legacy
+    'Completed':'badge-completed',
+    'Pending':'badge-pending',
+    'In Progress':'badge-inprogress',
+    'Severe blur':'badge-repair', // legacy
+    'Decommissioned':'badge-check'
+  };
   return `<span class="badge ${m[s]||'badge-check'}">${s}</span>`;
 }
 
